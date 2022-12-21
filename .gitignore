@@ -7,3 +7,6 @@ eggs/
 .installed.cfg
 __pycache__
 .tox/
+/env/
+/.idea/
+/dist/
