@@ -885,3 +885,16 @@ Example::
 
     {% tagged_objects comedy_tag in tv.Show as comedies %}
 
+Development
+=============
+
+To install requirements use pip-tools::
+
+    $ pip install pip-tools
+
+To refresh requirements.txt::
+
+    pip-compile --allow-unsafe --generate-hashes --output-file=requirements.txt --resolver=backtracking requirements.in
+
+To install requirements::
+    pip-sync
