@@ -2,6 +2,13 @@
 Django Tagging Changelog
 ========================
 
+Version 0.5.0+dismine.1, unreleased:
+------------------------------
+* Refactoring by Sourcery.
+* Drop support for Django 2.2.
+* Improve support Python 3.
+
+
 Version 0.5.0, 6th March 2020:
 ------------------------------
 

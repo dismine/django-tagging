@@ -12,7 +12,7 @@ setup(
 
     description='Generic tagging application for Django',
     long_description='\n'.join([open('README.md').read(),
-                                open('CHANGELOG.txt').read()]),
+                                open('CHANGELOG').read()]),
     keywords='django, tag, tagging',
 
     author=tagging.__author__,
