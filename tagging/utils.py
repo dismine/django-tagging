@@ -2,6 +2,8 @@
 Tagging utilities - from user tag input parsing to tag cloud
 calculation.
 """
+
+import contextlib
 import math
 
 from django.db.models.query import QuerySet
@@ -29,10 +31,7 @@ def parse_tag_input(input):
     # input, we don't *do* a recall... I mean, we know we only need to
     # split on spaces.
     if ',' not in input and '"' not in input:
-        words = list(set(split_strip(input, ' ')))
-        words.sort()
-        return words
-
+        return sorted(set(split_strip(input, ' ')))
     words = []
     buffer = []
     # Defer splitting of non-quoted sections until we know if there are
@@ -55,8 +54,7 @@ def parse_tag_input(input):
                     buffer.append(c)
                     c = next(i)
                 if buffer:
-                    word = ''.join(buffer).strip()
-                    if word:
+                    if word := ''.join(buffer).strip():
                         words.append(word)
                     buffer = []
                 open_quote = False
@@ -72,15 +70,10 @@ def parse_tag_input(input):
                 saw_loose_comma = True
             to_be_split.append(''.join(buffer))
     if to_be_split:
-        if saw_loose_comma:
-            delimiter = ','
-        else:
-            delimiter = ' '
+        delimiter = ',' if saw_loose_comma else ' '
         for chunk in to_be_split:
             words.extend(split_strip(chunk, delimiter))
-    words = list(set(words))
-    words.sort()
-    return words
+    return sorted(set(words))
 
 
 def split_strip(input, delimiter=','):
@@ -110,23 +103,20 @@ def edit_string_for_tags(tags):
     for tag in tags:
         name = tag.name
         if ',' in name:
-            names.append('"%s"' % name)
+            names.append(f'"{name}"')
             continue
         elif ' ' in name:
             if not use_commas:
                 use_commas = True
         names.append(name)
-    if use_commas:
-        glue = ', '
-    else:
-        glue = ' '
+    glue = ', ' if use_commas else ' '
     result = glue.join(names)
 
     # If we only had one name, and it had spaces,
     # we need to enclose it in quotes.
     # Otherwise, it's interpreted as two tags.
     if len(names) == 1 and use_commas:
-        result = '"' + result + '"'
+        result = f'"{result}"'
 
     return result
 
@@ -214,14 +204,11 @@ def get_tag(tag):
     if isinstance(tag, Tag):
         return tag
 
-    try:
+    with contextlib.suppress(Tag.DoesNotExist):
         if isinstance(tag, str):
             return Tag.objects.get(name=tag)
         elif isinstance(tag, int):
             return Tag.objects.get(id=tag)
-    except Tag.DoesNotExist:
-        pass
-
     return None
 
 

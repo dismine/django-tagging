@@ -37,9 +37,10 @@ class TaggedObjectList(ListView):
         if self.tag is None:
             try:
                 self.tag = self.kwargs.pop('tag')
-            except KeyError:
+            except KeyError as e:
                 raise AttributeError(
-                    _('TaggedObjectList must be called with a tag.'))
+                    _('TaggedObjectList must be called with a tag.')
+                ) from e
 
         tag_instance = get_tag(self.tag)
         if tag_instance is None:

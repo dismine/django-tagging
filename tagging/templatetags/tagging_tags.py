@@ -182,17 +182,21 @@ def do_tag_cloud_for_model(parser, token):
         for i in range(5, len_bits):
             try:
                 name, value = bits[i].split('=')
-                if name == 'steps' or name == 'min_count':
+                if name in ['steps', 'min_count']:
                     try:
                         kwargs[str(name)] = int(value)
-                    except ValueError:
+                    except ValueError as e:
                         raise TemplateSyntaxError(
-                            _("%(tag)s tag's '%(option)s' option was not "
-                              "a valid integer: '%(value)s'") % {
+                            _(
+                                "%(tag)s tag's '%(option)s' option was not "
+                                "a valid integer: '%(value)s'"
+                            )
+                            % {
                                 'tag': bits[0],
                                 'option': name,
                                 'value': value,
-                            })
+                            }
+                        ) from e
                 elif name == 'distribution':
                     if value in ['linear', 'log']:
                         kwargs[str(name)] = {'linear': LINEAR,
@@ -212,13 +216,17 @@ def do_tag_cloud_for_model(parser, token):
                             'tag': bits[0],
                             'option': name,
                         })
-            except ValueError:
+            except ValueError as exc:
                 raise TemplateSyntaxError(
-                    _("%(tag)s tag was given a badly "
-                      "formatted option: '%(option)s'") % {
+                    _(
+                        "%(tag)s tag was given a badly "
+                        "formatted option: '%(option)s'"
+                    )
+                    % {
                         'tag': bits[0],
                         'option': bits[i],
-                    })
+                    }
+                ) from exc
     return TagCloudForModelNode(bits[1], bits[3], **kwargs)
 
 

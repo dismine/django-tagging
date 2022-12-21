@@ -94,7 +94,7 @@ class TagManager(models.Manager):
             counts = True
 
         model_table = qn(model._meta.db_table)
-        model_pk = '%s.%s' % (model_table, qn(model._meta.pk.column))
+        model_pk = f'{model_table}.{qn(model._meta.pk.column)}'
         query = """
         SELECT DISTINCT %(tag)s.id, %(tag)s.name%(count_sql)s
         FROM
@@ -110,7 +110,7 @@ class TagManager(models.Manager):
         %%s
         ORDER BY %(tag)s.name ASC""" % {
             'tag': qn(self.model._meta.db_table),
-            'count_sql': counts and (', COUNT(%s)' % model_pk) or '',
+            'count_sql': counts and f', COUNT({model_pk})' or '',
             'tagged_item': qn(TaggedItem._meta.db_table),
             'model': model_table,
             'model_pk': model_pk,
@@ -159,9 +159,7 @@ class TagManager(models.Manager):
         for k, v in filters.items():
             # Add support for both Django 4 and inferior versions
             queryset.query.add_q(Q((k, v)))
-        usage = self.usage_for_queryset(queryset, counts, min_count)
-
-        return usage
+        return self.usage_for_queryset(queryset, counts, min_count)
 
     def usage_for_queryset(self, queryset, counts=False, min_count=None):
         """
@@ -180,10 +178,7 @@ class TagManager(models.Manager):
         where, params = compiler.compile(queryset.query.where)
         extra_joins = ' '.join(compiler.get_from_clause()[0][1:])
 
-        if where:
-            extra_criteria = 'AND %s' % where
-        else:
-            extra_criteria = ''
+        extra_criteria = f'AND {where}' if where else ''
         return self._get_usage(queryset.model, counts, min_count,
                                extra_joins, extra_criteria, params)
 
@@ -226,14 +221,16 @@ class TagManager(models.Manager):
         %(min_count_sql)s
         ORDER BY %(tag)s.name ASC""" % {
             'tag': qn(self.model._meta.db_table),
-            'count_sql': counts and ', COUNT(%s.object_id)' %
-                tagged_item_table or '',
+            'count_sql': counts
+            and f', COUNT({tagged_item_table}.object_id)'
+            or '',
             'tagged_item': tagged_item_table,
             'content_type_id': ContentType.objects.get_for_model(model).pk,
             'tag_id_placeholders': ','.join(['%s'] * tag_count),
             'tag_count': tag_count,
-            'min_count_sql': min_count is not None and (
-                'HAVING COUNT(%s.object_id) >= %%s' % tagged_item_table) or '',
+            'min_count_sql': min_count is not None
+            and ('HAVING COUNT(%s.object_id) >= %%s' % tagged_item_table)
+            or '',
         }
 
         params = [tag.pk for tag in tags] * 2
@@ -321,9 +318,7 @@ class TaggedItemManager(models.Manager):
             where=[
                 '%s.content_type_id = %%s' % tagged_item_table,
                 '%s.tag_id = %%s' % tagged_item_table,
-                '%s.%s = %s.object_id' % (qn(model._meta.db_table),
-                                          qn(model._meta.pk.column),
-                                          tagged_item_table)
+                f'{qn(model._meta.db_table)}.{qn(model._meta.pk.column)} = {tagged_item_table}.object_id',
             ],
             params=[content_type.pk, tag.pk],
         )
@@ -351,7 +346,7 @@ class TaggedItemManager(models.Manager):
           AND %(model_pk)s = %(tagged_item)s.object_id
         GROUP BY %(model_pk)s
         HAVING COUNT(%(model_pk)s) = %(tag_count)s""" % {
-            'model_pk': '%s.%s' % (model_table, qn(model._meta.pk.column)),
+            'model_pk': f'{model_table}.{qn(model._meta.pk.column)}',
             'model': model_table,
             'tagged_item': qn(self.model._meta.db_table),
             'content_type_id': ContentType.objects.get_for_model(model).pk,
@@ -361,8 +356,7 @@ class TaggedItemManager(models.Manager):
 
         cursor = connection.cursor()
         cursor.execute(query, [tag.pk for tag in tags])
-        object_ids = [row[0] for row in cursor.fetchall()]
-        if len(object_ids) > 0:
+        if object_ids := [row[0] for row in cursor.fetchall()]:
             return queryset.filter(pk__in=object_ids)
         else:
             return model._default_manager.none()
@@ -389,7 +383,7 @@ class TaggedItemManager(models.Manager):
           AND %(tagged_item)s.tag_id IN (%(tag_id_placeholders)s)
           AND %(model_pk)s = %(tagged_item)s.object_id
         GROUP BY %(model_pk)s""" % {
-            'model_pk': '%s.%s' % (model_table, qn(model._meta.pk.column)),
+            'model_pk': f'{model_table}.{qn(model._meta.pk.column)}',
             'model': model_table,
             'tagged_item': qn(self.model._meta.db_table),
             'content_type_id': ContentType.objects.get_for_model(model).pk,
@@ -398,8 +392,7 @@ class TaggedItemManager(models.Manager):
 
         cursor = connection.cursor()
         cursor.execute(query, [tag.pk for tag in tags])
-        object_ids = [row[0] for row in cursor.fetchall()]
-        if len(object_ids) > 0:
+        if object_ids := [row[0] for row in cursor.fetchall()]:
             return queryset.filter(pk__in=object_ids)
         else:
             return model._default_manager.none()
@@ -438,16 +431,14 @@ class TaggedItemManager(models.Manager):
         %(limit_offset)s"""
         tagging_table = qn(self.model._meta.get_field(
             'tag').remote_field.model._meta.db_table)
-        query = query % {
-            'model_pk': '%s.%s' % (model_table, qn(model._meta.pk.column)),
+        query %= {
+            'model_pk': f'{model_table}.{qn(model._meta.pk.column)}',
             'count': qn('count'),
             'model': model_table,
             'tagged_item': qn(self.model._meta.db_table),
             'tag': tagging_table,
             'content_type_id': content_type.pk,
             'related_content_type_id': related_content_type.pk,
-            # Hardcoding this for now just to get tests working again - this
-            # should now be handled by the query object.
             'limit_offset': num is not None and 'LIMIT %s' or '',
         }
 
@@ -456,8 +447,7 @@ class TaggedItemManager(models.Manager):
         if num is not None:
             params.append(num)
         cursor.execute(query, params)
-        object_ids = [row[0] for row in cursor.fetchall()]
-        if len(object_ids) > 0:
+        if object_ids := [row[0] for row in cursor.fetchall()]:
             # Use in_bulk here instead of an id__in lookup,
             # because id__in would clobber the ordering.
             object_dict = queryset.in_bulk(object_ids)
@@ -521,4 +511,4 @@ class TaggedItem(models.Model):
         verbose_name_plural = _('tagged items')
 
     def __str__(self):
-        return '%s [%s]' % (smart_str(self.object), smart_str(self.tag))
+        return f'{smart_str(self.object)} [{smart_str(self.tag)}]'

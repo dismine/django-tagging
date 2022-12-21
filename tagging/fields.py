@@ -93,7 +93,7 @@ class TagField(CharField):
         """
         Helper: get an instance's tag cache.
         """
-        return getattr(instance, '_%s_cache' % self.attname, None)
+        return getattr(instance, f'_{self.attname}_cache', None)
 
     def _set_instance_tag_cache(self, instance, tags):
         """
@@ -105,12 +105,11 @@ class TagField(CharField):
         # in instance.__dict__.
         # The issue is introducted in Django 1.10
         instance.__dict__[self.attname] = tags
-        setattr(instance, '_%s_cache' % self.attname, tags)
+        setattr(instance, f'_{self.attname}_cache', tags)
 
     def get_internal_type(self):
         return 'CharField'
 
     def formfield(self, **kwargs):
-        defaults = {'form_class': TagFormField}
-        defaults.update(kwargs)
+        defaults = {'form_class': TagFormField} | kwargs
         return super(TagField, self).formfield(**defaults)

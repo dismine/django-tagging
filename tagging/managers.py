@@ -57,12 +57,11 @@ class TagDescriptor(object):
     for model instances.
     """
     def __get__(self, instance, owner):
-        if not instance:
-            tag_manager = ModelTagManager()
-            tag_manager.model = owner
-            return tag_manager
-        else:
+        if instance:
             return Tag.objects.get_for_object(instance)
+        tag_manager = ModelTagManager()
+        tag_manager.model = owner
+        return tag_manager
 
     def __set__(self, instance, value):
         Tag.objects.update_tags(instance, value)

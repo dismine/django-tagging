@@ -56,7 +56,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Django Tagging'
-copyright = '%s, %s' % (date.today().year, tagging.__maintainer__)
+copyright = f'{date.today().year}, {tagging.__maintainer__}'
 author = tagging.__author__
 
 # The version info for the project you're documenting, acts as replacement for
