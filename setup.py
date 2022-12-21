@@ -13,6 +13,7 @@ setup(
     description='Generic tagging application for Django',
     long_description='\n'.join([open('README.md').read(),
                                 open('CHANGELOG').read()]),
+    long_description_content_type='text/x-rst',
     keywords='django, tag, tagging',
 
     author=tagging.__author__,
@@ -36,5 +37,6 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
         'Topic :: Utilities',
-        'Topic :: Software Development :: Libraries :: Python Modules']
+        'Topic :: Software Development :: Libraries :: Python Modules'],
+    install_requires=['Django>=3.0']
 )

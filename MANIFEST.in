@@ -1,7 +1,7 @@
-include CHANGELOG.txt
+include CHANGELOG
 include LICENSE.txt
 include MANIFEST.in
-include README.rst
+include README.md
 include versions.cfg
 include buildout.cfg
 recursive-include docs *
