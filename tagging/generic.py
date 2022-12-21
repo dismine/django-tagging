@@ -28,8 +28,8 @@ def fetch_content_objects(tagged_items, select_related_for=None):
         objects.setdefault(item.content_type_id, []).append(item.object_id)
 
     # Retrieve content types and content objects in bulk
-    content_types = ContentType._default_manager.in_bulk(objects.keys())
-    for content_type_pk, object_pks in objects.iteritems():
+    content_types = ContentType._default_manager.in_bulk(list(objects.keys()))
+    for content_type_pk, object_pks in objects.items():
         model = content_types[content_type_pk].model_class()
         if content_types[content_type_pk].model in select_related_for:
             objects[content_type_pk] = model._default_manager.select_related(
