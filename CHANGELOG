@@ -5,7 +5,7 @@ Django Tagging Changelog
 Version 0.6.0+dismine.1, 12st June 2024:
 ------------------------------
 * Compatiblity fix for Django 4.2.
-* Use assertEqual instead of deprecated assertEquals.
+* Compatiblity fix for Python 3.12.
 
 Version 0.5.0+dismine.1, 21st December 2022:
 ------------------------------
