@@ -5,6 +5,7 @@ Django Tagging Changelog
 Version 0.6.0+dismine.1, 12st June 2024:
 ------------------------------
 * Compatiblity fix for Django 4.2.
+* Drop support for Django 3.2.
 * Compatiblity fix for Python 3.12.
 
 Version 0.5.0+dismine.1, 21st December 2022:
@@ -12,7 +13,6 @@ Version 0.5.0+dismine.1, 21st December 2022:
 * Refactoring by Sourcery.
 * Drop support for Django 2.2.
 * Improve support Python 3.
-
 
 Version 0.5.0, 6th March 2020:
 ------------------------------

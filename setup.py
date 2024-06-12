@@ -38,5 +38,5 @@ setup(
         'Programming Language :: Python :: 3',
         'Topic :: Utilities',
         'Topic :: Software Development :: Libraries :: Python Modules'],
-    install_requires=['Django>=3.0']
+    install_requires=['Django>=4.0']
 )
