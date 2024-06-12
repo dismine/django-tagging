@@ -2,7 +2,11 @@
 Django Tagging Changelog
 ========================
 
-Version 0.5.0+dismine.1, unreleased:
+Version 0.6.0+dismine.1, 12st June 2024:
+------------------------------
+* Fix FullResultSet error on empty where clause.
+
+Version 0.5.0+dismine.1, 21st December 2022:
 ------------------------------
 * Refactoring by Sourcery.
 * Drop support for Django 2.2.
