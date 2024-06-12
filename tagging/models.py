@@ -3,7 +3,6 @@ Models and managers for tagging.
 """
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import FullResultSet
 from django.db import connection
 from django.db import models
 from django.db.models.query_utils import Q
@@ -17,6 +16,10 @@ from tagging.utils import get_queryset_and_model
 from tagging.utils import get_tag_list
 from tagging.utils import parse_tag_input
 
+try:
+    from django.core.exceptions import FullResultSet
+except ImportError:
+    pass
 
 qn = connection.ops.quote_name
 
@@ -179,6 +182,11 @@ class TagManager(models.Manager):
         try:
             where, params = compiler.compile(queryset.query.where)
         except FullResultSet:
+            # if the queryset has no where clause, we can't compile it
+            # django added some safety checks in 4.2, so we need to handle this case manually
+            # usually this should prevent massive query generation? so at this place we should
+            # handle this in some smart way
+            # https://docs.djangoproject.com/en/4.2/ref/exceptions/#fullresultset
             where, params = '', []
         extra_joins = ' '.join(compiler.get_from_clause()[0][1:])
 

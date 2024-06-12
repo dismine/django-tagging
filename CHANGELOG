@@ -4,7 +4,8 @@ Django Tagging Changelog
 
 Version 0.6.0+dismine.1, 12st June 2024:
 ------------------------------
-* Fix FullResultSet error on empty where clause.
+* Compatiblity fix for Django 4.2.
+* Use assertEqual instead of deprecated assertEquals.
 
 Version 0.5.0+dismine.1, 21st December 2022:
 ------------------------------
