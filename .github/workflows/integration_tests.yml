@@ -4,6 +4,7 @@ on: push
 jobs:
   container-job:
     runs-on: ubuntu-latest
+    container: python:3.10-slim
 
     services:
       postgres:
@@ -32,11 +33,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
