@@ -2,6 +2,11 @@
 Django Tagging Changelog
 ========================
 
+Version 0.7.0+dismine.1, 4st June 2025:
+------------------------------
+* Minimal Django version 5.2.
+* Migration to Poetry.
+
 Version 0.6.0+dismine.1, 12st June 2024:
 ------------------------------
 * Compatiblity fix for Django 4.2.
