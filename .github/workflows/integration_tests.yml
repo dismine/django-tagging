@@ -57,7 +57,7 @@ jobs:
       # MySQL
       # -----
       - name: Install OS dependencies for MySQL
-        run: sudo apt-get update && sudo apt-get -y install -y gcc default-libmysqlclient-dev
+        run: apt-get update && apt-get -y install -y gcc default-libmysqlclient-dev
 
       - name: Install Python dependencies for MySQL
         run: poetry run pip install mysqlclient
