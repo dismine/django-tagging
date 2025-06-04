@@ -1,6 +1,6 @@
 [project]
 name = "django-tagging"
-version = "0.6.0+dismine.1"
+version = "0.7.0+dismine.1"
 description = "Generic tagging application for Django"
 authors = [
   {name = "Jonathan Buchanan", email = "jonathan.buchanan@gmail.com"}
