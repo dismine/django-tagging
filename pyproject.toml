@@ -39,6 +39,9 @@ Repository = "https://github.com/dismine/django-tagging"
 Changelog = "https://github.com/dismine/django-tagging/blob/develop/CHANGELOG"
 
 [tool.poetry]
+exclude = ["**/tests"]
+
+include = ["docs", "CHANGELOG", "LICENSE.txt"]
 packages = [{ include = "tagging" }]
 
 [tool.poetry.group.dev]
