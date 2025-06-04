@@ -16,5 +16,5 @@ urlpatterns = [
         related_tags=True)),
     re_path(r'^no-tag/$', TaggedObjectList.as_view(model=Article)),
     re_path(r'^no-query-no-model/$', TaggedObjectList.as_view()),
-    re_path(r'^(?P<tag>[^/]+(?u))/$', TaggedObjectList.as_view(model=Article)),
+    re_path(r'^(?P<tag>[^/]+)/$', TaggedObjectList.as_view(model=Article)),
 ]
